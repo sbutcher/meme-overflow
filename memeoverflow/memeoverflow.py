@@ -101,6 +101,9 @@ class MemeOverflow:
         if meme_id == PETER_PARKER_CRY:
             text0 = None
             text1 = text
+        elif meme_id == BATMAN_SLAP:
+            text0 = text
+            text1 = "Install Arch Linux!"
         elif meme_id == KERMIT_BUSINESS:
             if text.endswith('?'):
                 # try again
@@ -135,7 +138,7 @@ class MemeOverflow:
 
     def get_se_questions(self, n=1):
         """
-        Retreive n questions from the StackExchange site
+        Retrieve n questions from the StackExchange site
         """
         url = 'https://api.stackexchange.com/2.2/questions'
         params = {
