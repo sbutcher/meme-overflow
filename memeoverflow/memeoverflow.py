@@ -5,9 +5,12 @@ import random
 from time import sleep
 from io import BytesIO
 import html
+import urllib.request
+import wget
 
 import requests
 from twython import Twython, TwythonError
+from mastodon import Mastodon   #pip3 install Mastodon.py
 
 
 class MemeOverflow:
@@ -35,6 +38,10 @@ class MemeOverflow:
         )
         self.imgflip = imgflip
         self.stackexchange = stackexchange
+        self.mastodon = Mastodon(
+    access_token = 'ef56dd61cd91fdeb65e90d67a2e650581406d20be83b62cd911dcf20ea7c9792',
+    api_base_url = 'https://ubuntu.social'
+)
 
     def __repr__(self):
         return f"<MemeOverflow object for site {self.stackexchange['site']}>"
@@ -59,15 +66,16 @@ class MemeOverflow:
                 status = f'{question} {question_url}'
                 img_url, meme_id = self.make_meme(question)
                 try:
-                    self.tweet(status, img_url)
+                    #self.tweet(status, img_url)
+                    self.toot(status, img_url)
                     print(f'Tweeted: {question} [meme {meme_id}]')
-                except TwythonError as e:
-                    print(f'Failed to tweet: {e}')
+                except Exception as e:
+                    print(f'Failed to toot: {e}')
                     sleep(60)
                     continue
                 self.db.insert_question(question_id)
-                sleep(60*5)
-            sleep(60*5)
+                sleep(600*5)
+            sleep(600*5)
 
     def update_meme_database(self):
         """
@@ -161,3 +169,21 @@ class MemeOverflow:
         response = self.twitter.upload_media(media=img)
         media_ids = [response['media_id']]
         self.twitter.update_status(status=status, media_ids=media_ids)
+    
+    def toot(self, status, img_url):
+        """
+        Toot status with the image attached
+        """
+        # This would be a lot easier if mastodon accepted a BytesIO stream
+        # or imgflip didn't require headers.
+        opener = urllib.request.build_opener()
+        opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+        urllib.request.install_opener(opener)
+        # Instead we need to save a jpg to disk :(
+        # uses https://stackoverflow.com/a/46511429/1264592
+        urllib.request.urlretrieve(img_url, filename="./tmp.jpg")
+        media_uploaded_id = (self.mastodon.media_post("./tmp.jpg"))["id"]
+        medias = []
+        medias.append(media_uploaded_id)
+        #media_ids = [response['media_id']]
+        self.mastodon.status_post(status=status, media_ids=medias)
