@@ -6,10 +6,10 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name="memeoverflow",
-    version="0.3.0",
-    author="Ben Nuttall",
-    description="Take questions posted on a particular Stack Exchange site, generate a meme out of it and tweet it",
+    name="memeoverflow (fork)",
+    version="0.3.1",
+    author="Ben Nuttall, modified for mastodon by sbutcher",
+    description="Take questions posted on a particular Stack Exchange site, generate a meme out of it and toot it",
     license="OSI Approved :: BSD License",
     keywords=[
         'stackexchange',
@@ -17,7 +17,7 @@ setup(
         'meme',
         'twitter',
     ],
-    url="https://github.com/bennuttall/meme-overflow",
+    url="https://github.com/sbutcher/meme-overflow",
     packages=find_packages(),
     requires=[
         'requests',
